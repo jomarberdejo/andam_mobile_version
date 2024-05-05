@@ -60,7 +60,7 @@ const EmergencyGuidelines = () => {
           <Text style={styles.headerText}>Evacuation Procedures</Text>
         </View>
       </Link>
-      <Link
+      {/* <Link
         href="(stack)/new"
         style={{
           padding: 20,
@@ -71,8 +71,8 @@ const EmergencyGuidelines = () => {
         }}
       >
         Guideline 4
-      </Link>
-      <Link
+      </Link> */}
+      {/* <Link
         href="(stack)/new"
         style={{
           padding: 20,
@@ -83,7 +83,7 @@ const EmergencyGuidelines = () => {
         }}
       >
         Guideline 5
-      </Link>
+      </Link> */}
     </View>
   );
 };

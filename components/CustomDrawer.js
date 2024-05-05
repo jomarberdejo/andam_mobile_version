@@ -1,3 +1,5 @@
+import React, { useEffect, useState } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
   View,
   Text,
@@ -6,7 +8,6 @@ import {
   Linking,
   TouchableOpacity,
 } from "react-native";
-import React from "react";
 import {
   DrawerContentScrollView,
   DrawerItemList,
@@ -19,6 +20,26 @@ import pnplogo from "../assets/images/pnp-cover.jpg";
 import bfplogo from "../assets/images/bfp-cover.png";
 
 const CustomDrawer = (props) => {
+  const [userName, setUserName] = useState("");
+
+  useEffect(() => {
+    const fetchCurrUserName = async () => {
+      try {
+        const userDataString = await AsyncStorage.getItem("userData");
+        if (userDataString) {
+          const userData = JSON.parse(userDataString);
+          if (userData.newUserData && userData.newUserData.fullName) {
+            setUserName(userData.newUserData.fullName);
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching name:", error);
+      }
+    };
+
+    fetchCurrUserName();
+  }, []);
+
   const openFacebookPage = (url) => {
     Linking.openURL(url);
   };
@@ -36,6 +57,12 @@ const CustomDrawer = (props) => {
       </DrawerContentScrollView>
       <View style={styles.footerContainer}>
         <Text style={styles.footerContent}>
+          Hi there,{" "}
+          <Text style={styles.currUserName}>
+            {userName ? `${userName}` : "Guest"}!
+          </Text>
+        </Text>
+        <Text style={styles.footerInfo}>
           For more information, please visit:
         </Text>
         <View style={styles.agencyContainer}>
@@ -125,45 +152,59 @@ const CustomDrawer = (props) => {
 
 const styles = StyleSheet.create({
   drawerLogo: {
-    width: 130,
-    height: 130,
+    width: 120,
+    height: 120,
     alignSelf: "center",
     borderRadius: 50,
-    marginTop: 35,
+    marginTop: 15,
   },
   sidebarContainer: {
     borderBottomWidth: 1,
     borderColor: "#ccc",
-    marginBottom: 20,
+    marginBottom: 5,
   },
   sidebarTitle: {
     textAlign: "center",
     fontWeight: "bold",
     fontSize: 25,
-    color: "gray",
+    color: "green",
     paddingVertical: 20,
   },
   footerContainer: {
     borderTopWidth: 1,
     borderColor: "#ccc",
     marginTop: 20,
-    paddingVertical: 20,
+    paddingVertical: 10,
     paddingHorizontal: 10,
   },
   footerContent: {
     textAlign: "center",
     fontWeight: "bold",
     fontSize: 16,
-    marginBottom: 10,
+    marginVertical: 5,
+    paddingVertical: 2,
+  },
+  footerInfo: {
+    textAlign: "center",
+    fontWeight: "bold",
+    fontSize: 16,
+    marginBottom: 20,
+    paddingVertical: 2,
+  },
+  currUserName: {
+    fontWeight: "thin",
+    fontSize: 18,
+    color: "green",
+    fontStyle: "italic",
   },
   agencyContainer: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 10,
+    marginBottom: 5,
   },
   agencyLogo: {
-    width: 40,
-    height: 40,
+    width: 35,
+    height: 35,
     marginRight: 10,
   },
   agencyInfo: {

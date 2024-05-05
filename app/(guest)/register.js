@@ -53,6 +53,19 @@ const Register = () => {
   }, []);
 
   const onSubmit = (data) => {
+    if (!image) {
+      Alert.alert(
+        "Failed",
+        "Please upload an image of your identity, it may be your VALID ID, PHOTO, etc.",
+        [
+          {
+            text: "OK",
+          },
+        ],
+        { cancelable: false }
+      );
+      return;
+    }
     const formData = {
       ...data,
       imageIdentityUrl: image,
@@ -65,7 +78,7 @@ const Register = () => {
 
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       aspect: [4, 3],
       quality: 1,
@@ -78,7 +91,7 @@ const Register = () => {
 
   const takePhoto = async () => {
     let result = await ImagePicker.launchCameraAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       aspect: [4, 3],
       quality: 1,

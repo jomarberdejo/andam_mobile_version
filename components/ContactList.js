@@ -14,13 +14,14 @@ export const ContactList = ({ selectedAgency }) => {
   const [contactNumbers, setContactNumbers] = useState([]);
 
   useEffect(() => {
+    console.log(process.env.EXPO_PUBLIC_BACKEND_API_URL);
     const fetchContacts = async () => {
       try {
         const res = await axios.get(
           process.env.EXPO_PUBLIC_BACKEND_API_URL + "/api/contact"
         );
-        const contactData = res.data;
-        const agencyMap = contactData.reduce((acc, curr) => {
+        const contactData = await res.data;
+        const agencyMap = contactData?.reduce((acc, curr) => {
           acc[curr.agency] = curr.number;
           return acc;
         }, {});
