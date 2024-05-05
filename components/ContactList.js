@@ -9,7 +9,6 @@ import {
 } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import axios from "axios";
-import { BACKEND_API_URL } from "react-native-dotenv";
 
 export const ContactList = ({ selectedAgency }) => {
   const [contactNumbers, setContactNumbers] = useState([]);
@@ -17,7 +16,9 @@ export const ContactList = ({ selectedAgency }) => {
   useEffect(() => {
     const fetchContacts = async () => {
       try {
-        const res = await axios.get(BACKEND_API_URL + "/api/contact");
+        const res = await axios.get(
+          process.env.EXPO_PUBLIC_BACKEND_API_URL + "/api/contact"
+        );
         const contactData = res.data;
         const agencyMap = contactData.reduce((acc, curr) => {
           acc[curr.agency] = curr.number;

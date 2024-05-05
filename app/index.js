@@ -19,7 +19,6 @@ import { ScrollView } from "react-native-gesture-handler";
 import { agencies, backgroundImages, reportSchema } from "../constants";
 import { ContactList } from "../components/ContactList";
 import axios from "axios";
-import { BACKEND_API_URL } from "react-native-dotenv";
 
 const ReportForm = () => {
   const { location, loading } = useLocation();
@@ -61,10 +60,10 @@ const ReportForm = () => {
 
               const userData = JSON.parse(userDataJson);
 
-              const { fullName, contactNumber } = userData.userData;
+              const { id, fullName, contactNumber } = userData.newUserData;
 
               const response = await axios.post(
-                BACKEND_API_URL + "/api/report",
+                process.env.EXPO_PUBLIC_BACKEND_API_URL + "/api/report",
                 {
                   name: fullName,
                   contact: contactNumber,
@@ -73,6 +72,7 @@ const ReportForm = () => {
                   location: location?.display_name,
                   latitude: parseFloat(location?.lat),
                   longitude: parseFloat(location?.lon),
+                  residentId: id,
                 }
               );
 

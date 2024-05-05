@@ -18,7 +18,7 @@ const Layout = () => {
       const userData = JSON.parse(userDataJson);
       console.log(userData);
       if (!userData) {
-        router.push("(guest)/login");
+        router.push("(guest)/register");
       }
     } catch (error) {
       console.error("Error retrieving isAuthenticated:", error);
@@ -73,7 +73,7 @@ const Layout = () => {
             }}
           />
           <Drawer.Screen
-            name="(guest)/login"
+            name="(guest)/register"
             options={{
               drawerLabel: "Register",
               headerShown: false,

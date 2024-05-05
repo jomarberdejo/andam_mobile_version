@@ -19,6 +19,7 @@ import * as ImagePicker from "expo-image-picker";
 import BouncyCheckbox from "react-native-bouncy-checkbox";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
+import axios from "axios";
 
 const Register = () => {
   const router = useRouter();
@@ -26,6 +27,7 @@ const Register = () => {
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [userData, setUserData] = useState();
+  const [processing, setProcessing] = useState(false);
   const {
     control,
     handleSubmit,
@@ -35,6 +37,8 @@ const Register = () => {
   });
 
   useEffect(() => {
+    // console.log(process.env.EXPO_PUBLIC_BACKEND_API_URL);
+
     async function getAuth() {
       const userDataJson = await AsyncStorage.getItem("userData");
       if (userDataJson !== null) {
@@ -51,7 +55,7 @@ const Register = () => {
   const onSubmit = (data) => {
     const formData = {
       ...data,
-      image: image,
+      imageIdentityUrl: image,
     };
 
     setUserData(formData);
@@ -90,6 +94,8 @@ const Register = () => {
   };
 
   const handleAgreement = async () => {
+    if (processing) return;
+
     if (!termsAccepted) {
       Alert.alert(
         "Terms and Conditions",
@@ -103,21 +109,55 @@ const Register = () => {
       );
     } else {
       try {
+        setProcessing(true); // Set processing to true
+
+        const formData = new FormData();
+        formData.append("fullName", userData.fullName);
+        formData.append("contactNumber", userData.contactNumber);
+        formData.append("file", {
+          uri: userData.imageIdentityUrl,
+          name: "image.jpg",
+          type: "image/jpeg",
+        });
+
+        const response = await fetch(
+          process.env.EXPO_PUBLIC_BACKEND_API_URL + "/api/resident",
+          {
+            method: "POST",
+            body: formData,
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+
+        const data = await response.json();
+
+        const newUserData = {
+          ...userData,
+          id: data?.resident.id,
+        };
+
         const userDataWithTerms = {
-          userData,
+          newUserData,
           termsAccepted: true,
           isAuthenticated: true,
         };
 
-        await AsyncStorage.setItem(
-          "userData",
-          JSON.stringify(userDataWithTerms)
-        );
-
-        setModalVisible(false);
-        router.push("/");
+        if (response.status === 201) {
+          await AsyncStorage.setItem(
+            "userData",
+            JSON.stringify(userDataWithTerms)
+          );
+          setModalVisible(false);
+          router.push("/");
+        } else {
+          Alert.alert("Error", "Failed to register");
+        }
       } catch (error) {
-        console.error("Error storing data:", error);
+        console.error("Error registering:", error);
+      } finally {
+        setProcessing(false);
       }
     }
   };
@@ -145,7 +185,6 @@ const Register = () => {
         <Text style={styles.error}>{errors.fullName.message}</Text>
       )}
 
-      {/* Contact Number */}
       <Text style={styles.label}>Contact Number:</Text>
       <Controller
         control={control}
@@ -176,10 +215,8 @@ const Register = () => {
         </TouchableOpacity>
       </View>
 
-      {/* Selected Image Preview */}
       {image && <Image source={{ uri: image }} style={styles.image} />}
 
-      {/* Submit Button */}
       <TouchableOpacity
         style={styles.submitButton}
         onPress={handleSubmit(onSubmit)}
@@ -187,7 +224,6 @@ const Register = () => {
         <Text style={styles.buttonText}>Register</Text>
       </TouchableOpacity>
 
-      {/* Modal for Terms and Conditions */}
       <Modal
         animationType="slide"
         transparent={true}
@@ -246,6 +282,7 @@ const Register = () => {
                 <Pressable
                   style={styles.modalActionButton}
                   onPress={handleAgreement}
+                  disabled={processing}
                 >
                   <Text style={styles.modalActionButtonText}>I agree</Text>
                 </Pressable>
