@@ -10,6 +10,8 @@ import {
   ScrollView,
   Pressable,
   Alert,
+  ActivityIndicator,
+  ToastAndroid,
 } from "react-native";
 
 import { useForm, Controller } from "react-hook-form";
@@ -19,7 +21,6 @@ import * as ImagePicker from "expo-image-picker";
 import BouncyCheckbox from "react-native-bouncy-checkbox";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
-import axios from "axios";
 
 const Register = () => {
   const router = useRouter();
@@ -122,7 +123,7 @@ const Register = () => {
       );
     } else {
       try {
-        setProcessing(true); // Set processing to true
+        setProcessing(true);
 
         const formData = new FormData();
         formData.append("fullName", userData.fullName);
@@ -164,6 +165,10 @@ const Register = () => {
           );
           setModalVisible(false);
           router.push("/");
+          ToastAndroid.show(
+            "Account Succesfully Registered!",
+            ToastAndroid.LONG
+          );
         } else {
           Alert.alert("Error", "Failed to register");
         }
@@ -217,7 +222,8 @@ const Register = () => {
       )}
 
       <Text style={styles.label}>
-        Kindly provide evidence of your identity by uploading it.
+        Kindly provide evidence of your identity by uploading it. (Example. ID
+        PICTURE, YOUR PHOTO)
       </Text>
       <View style={styles.buttonsContainer}>
         <TouchableOpacity style={styles.button} onPress={pickImage}>
@@ -297,7 +303,12 @@ const Register = () => {
                   onPress={handleAgreement}
                   disabled={processing}
                 >
-                  <Text style={styles.modalActionButtonText}>I agree</Text>
+                  <Text style={styles.modalActionButtonText}>
+                    {processing && (
+                      <ActivityIndicator size={12} color="yellow" />
+                    )}{" "}
+                    I agree
+                  </Text>
                 </Pressable>
                 <Pressable
                   style={styles.modalActionButton}
@@ -420,6 +431,10 @@ const styles = StyleSheet.create({
 
   modalActionButtonText: {
     color: "white",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    gap: 1,
     fontSize: 14,
   },
 });

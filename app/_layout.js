@@ -13,6 +13,7 @@ const Layout = () => {
   const router = useRouter();
   const getIsAuthenticated = async () => {
     try {
+      // await AsyncStorage.clear();
       const userDataJson = await AsyncStorage.getItem("userData");
 
       const userData = JSON.parse(userDataJson);
