@@ -22,8 +22,7 @@ const About = () => {
         </Text>
         <Text style={styles.paragraph}>
           2. Your name and contact number are collected automatically and stored
-          securely for future use. Please note that this information will be
-          lost if you uninstall the app or clear its data.
+          securely for future use.
         </Text>
         <Text style={styles.paragraph}>
           3. Check your location on the map before reporting to ensure accuracy.
@@ -89,11 +88,8 @@ const About = () => {
         </Text>
         <Text style={styles.paragraph}>
           - If something goes wrong during the reporting process or while
-          obtaining location, try restarting the app for a smoother experience.
-        </Text>
-        <Text style={styles.paragraph}>
-          - Please note that your registered information will be lost if you
-          uninstall the app or clear its data.
+          obtaining location, try restarting the app or refetch your location in
+          the maps pag for a smoother experience.
         </Text>
       </View>
     </ScrollView>

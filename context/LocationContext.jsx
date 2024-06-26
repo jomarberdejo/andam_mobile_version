@@ -14,10 +14,6 @@ export const LocationProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    getCurrentLocation();
-  }, []);
-
   const getCurrentLocation = async () => {
     try {
       setLoading(true);
@@ -103,7 +99,9 @@ export const LocationProvider = ({ children }) => {
   };
 
   return (
-    <LocationContext.Provider value={{ location, loading, error }}>
+    <LocationContext.Provider
+      value={{ location, loading, error, getCurrentLocation }}
+    >
       {children}
     </LocationContext.Provider>
   );

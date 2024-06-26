@@ -3,7 +3,7 @@ import React from "react";
 import { Stack, router } from "expo-router";
 import { MaterialIcons } from "@expo/vector-icons";
 
-const NewLayout = () => {
+const EmergencyGuidesLayout = () => {
   return (
     <Stack>
       <Stack.Screen
@@ -12,7 +12,7 @@ const NewLayout = () => {
           headerTitle: "Emergency Guidelines",
           headerLeft: () => (
             <TouchableOpacity
-              onPress={() => router.back()}
+              onPress={() => router.push("reports")}
               style={{ marginRight: 35 }}
             >
               <MaterialIcons name="arrow-back" size={24} color="black" />
@@ -50,4 +50,4 @@ const NewLayout = () => {
   );
 };
 
-export default NewLayout;
+export default EmergencyGuidesLayout;

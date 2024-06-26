@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { View, StyleSheet, Pressable } from "react-native";
+import { View, StyleSheet, Pressable, Text } from "react-native";
 import { WebView } from "react-native-webview";
 import {
   requestForegroundPermissionsAsync,
@@ -9,7 +9,8 @@ import { Ionicons } from "@expo/vector-icons";
 import { useLocation } from "../context/LocationContext";
 
 const EmergencyMap = () => {
-  const { location } = useLocation();
+  const { location, loading, getCurrentLocation } = useLocation();
+
   const webViewRef = useRef();
 
   const goBack = () => {
@@ -140,6 +141,15 @@ const EmergencyMap = () => {
       <Pressable style={styles.backButton} onPress={goBack}>
         <Ionicons name="arrow-back" size={24} color="black" />
       </Pressable>
+      <Pressable
+        style={styles.fetchButton}
+        onPress={getCurrentLocation}
+        disabled={loading}
+      >
+        <Text style={styles.fetchButtonText}>
+          {loading ? "Fetching..." : "Refetch Location"}
+        </Text>
+      </Pressable>
     </View>
   );
 };
@@ -159,6 +169,19 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     paddingHorizontal: 10,
     zIndex: 1,
+  },
+  fetchButton: {
+    position: "absolute",
+    top: 10,
+    right: 10,
+    backgroundColor: "white",
+    borderRadius: 5,
+    paddingHorizontal: 10,
+    zIndex: 1,
+  },
+  fetchButtonText: {
+    color: "black",
+    fontSize: 16,
   },
 });
 

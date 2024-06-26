@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -9,6 +9,7 @@ import {
   StyleSheet,
   ImageBackground,
   ToastAndroid,
+  BackHandler,
 } from "react-native";
 import DropDownPicker from "react-native-dropdown-picker";
 import Icon from "react-native-vector-icons/FontAwesome";
@@ -21,11 +22,24 @@ import { agencies, backgroundImages, reportSchema } from "../constants";
 import { ContactList } from "../components/ContactList";
 import axios from "axios";
 
-const ReportForm = () => {
-  const { location, loading } = useLocation();
+const Reports = () => {
+  const { location, loading, getCurrentLocation } = useLocation();
   const [open, setOpen] = useState(false);
   const [agency, setAgency] = useState(agencies[0].value);
   const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    getCurrentLocation();
+
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      () => {
+        return true;
+      }
+    );
+
+    return () => backHandler.remove();
+  }, []);
 
   const defaultValues = {
     detail: "",
@@ -41,10 +55,16 @@ const ReportForm = () => {
     defaultValues,
     mode: "onChange",
   });
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
+    const userDataJson = await AsyncStorage.getItem("userData");
+
+    const userData = await JSON.parse(userDataJson);
+
+    const { id, fullName, contactNumber } = userData;
     Alert.alert(
       "Confirm Submission",
-      `Are you sure you want to submit the report for ${agency}?`,
+      `Are you sure you want to submit the report for ${agency}?\n\nReport Details:\n- Detail: ${data.detail}\n- Agency: ${agency}\n- Location: ${location?.display_name}\n\nUser Information:\n- Name: ${fullName}\n- Contact Number: ${contactNumber}`,
+
       [
         {
           text: "Cancel",
@@ -57,14 +77,9 @@ const ReportForm = () => {
             try {
               setSubmitting(true);
 
-              const userDataJson = await AsyncStorage.getItem("userData");
-
-              const userData = JSON.parse(userDataJson);
-
-              const { id, fullName, contactNumber } = userData.newUserData;
-
               const response = await axios.post(
-                process.env.EXPO_PUBLIC_BACKEND_API_URL + "/api/report",
+                // process.env.EXPO_PUBLIC_BACKEND_API_URL + "/api/report",
+                "https://andam.onrender.com/api/report",
                 {
                   name: fullName,
                   contact: contactNumber,
@@ -271,4 +286,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ReportForm;
+export default Reports;

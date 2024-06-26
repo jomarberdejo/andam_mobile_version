@@ -12,14 +12,16 @@ import axios from "axios";
 
 export const ContactList = ({ selectedAgency }) => {
   const [contactNumbers, setContactNumbers] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     console.log(process.env.EXPO_PUBLIC_BACKEND_API_URL);
     const fetchContacts = async () => {
       try {
-        const res = await axios.get(
-          process.env.EXPO_PUBLIC_BACKEND_API_URL + "/api/contact"
-        );
+        setLoading(true);
+        // const res = await axios.get(process.env.EXPO_PUBLIC_BACKEND_API_URL + "/api/contact");
+        const res = await axios.get("https://andam.onrender.com/api/contact");
+
         const contactData = await res.data;
         const agencyMap = contactData?.reduce((acc, curr) => {
           acc[curr.agency] = curr.number;
@@ -35,6 +37,8 @@ export const ContactList = ({ selectedAgency }) => {
           PNP: ["09985986491"],
           MDRRMO: ["09498608899"],
         });
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -70,6 +74,7 @@ export const ContactList = ({ selectedAgency }) => {
       <TouchableOpacity
         onPress={() => handleCall(contactNumbers[selectedAgency])}
         style={styles.contactItem}
+        disabled={loading}
       >
         <Icon name="phone" size={16} color="white" />
         <Text style={styles.contactItemText}>

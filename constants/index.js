@@ -1,9 +1,57 @@
 import { z } from "zod";
+import { FontAwesome5, MaterialIcons } from "@expo/vector-icons";
+
+export const icons = {
+  index: (props) => <FontAwesome5 name="ambulance" size={26} {...props} />,
+  pnp: (props) => <MaterialIcons name="local-police" size={26} {...props} />,
+  bfp: (props) => (
+    <FontAwesome5 name="fire-extinguisher" size={26} {...props} />
+  ),
+  lgu: (props) => <FontAwesome5 name="landmark" size={26} {...props} />,
+};
 
 export const registerSchema = z.object({
   fullName: z
     .string()
-    .min(2, { message: "Full name should be at least 2 characters long" }),
+    .min(5, { message: "Full name should be at least 5 characters long" }),
+  username: z
+    .string()
+    .min(5, { message: "Username should be at least 5 characters long" }),
+  password: z
+    .string()
+    .min(8, { message: "Password must be at least 8 characters long" })
+    .regex(
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/,
+      {
+        message:
+          "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character",
+      }
+    ),
+  contactNumber: z
+    .string()
+    .length(11, { message: "Contact number must be 11 digits long" })
+    .regex(/^\d+$/, {
+      message: "Contact number should contain only numeric characters",
+    }),
+});
+
+export const loginSchema = z.object({
+  username: z.string().min(1, {
+    message: "Username is required.",
+  }),
+  password: z.string().min(1, {
+    message: "Password is required.",
+  }),
+});
+
+export const profileSchema = z.object({
+  fullName: z
+    .string()
+    .min(5, { message: "Full name should be at least 5 characters long" }),
+  email: z
+    .union([z.string().email("Invalid email address"), z.null()])
+    .optional(),
+
   contactNumber: z
     .string()
     .length(11, { message: "Contact number must be 11 digits long" })
@@ -146,7 +194,7 @@ export const evacuationProcedure = {
   icon: "ios-walk",
   content: [
     {
-      title: "Evacuation Routes",
+      title: "Routes",
       steps: [
         "1. Follow the designated evacuation routes.",
         "2. Stay calm and assist others if necessary.",
@@ -154,7 +202,7 @@ export const evacuationProcedure = {
       ],
     },
     {
-      title: "Emergency Meeting Point",
+      title: "Meet",
       steps: [
         "1. Designate a meeting point outside of your home where everyone can gather in case of evacuation.",
         "2. Ensure all household members know the location of this meeting point.",
@@ -162,7 +210,7 @@ export const evacuationProcedure = {
       ],
     },
     {
-      title: "Communication Plan",
+      title: "Communication",
       steps: [
         "1. Establish a communication plan with family members or roommates in case you are separated during an emergency.",
         "2. Exchange contact information and establish a protocol for checking in and providing updates on your status.",
@@ -171,3 +219,29 @@ export const evacuationProcedure = {
     },
   ],
 };
+
+export const termsAndConditionsText =
+  "1. Acceptance of Terms: By using our app ANDAM, you agree to abide" +
+  " by the following terms and conditions.\n\n" +
+  "2. User Conduct: You agree not to engage in any unethical or" +
+  " illegal activities, including but not limited to spamming, pranks," +
+  " or any other activities that may harm others.\n\n" +
+  "3. Data Privacy and Security: ANDAM is committed to ensuring the" +
+  " safety and privacy of your data. We implement strict security" +
+  " measures to protect your personal information and adhere to all" +
+  " relevant data protection regulations.\n\n" +
+  "4. Intellectual Property: All content and materials provided by" +
+  " ANDAM, including but not limited to text, images, logos, and" +
+  " software, are protected by intellectual property laws. You agree" +
+  " not to use, reproduce, or distribute any content from the app" +
+  " without prior authorization.\n\n" +
+  '5. Disclaimer of Warranties: ANDAM provides the app on an "as is"' +
+  ' and "as available" basis, without any warranties or' +
+  " representations of any kind. We do not guarantee the accuracy," +
+  " completeness, or reliability of any content or services provided" +
+  " through the app.\n\n" +
+  "6. Limitation of Liability: In no event shall ANDAM be liable for" +
+  " any indirect, incidental, special, or consequential damages" +
+  " arising out of or in any way connected with your use of the app.\n\n" +
+  "By checking the box below, you acknowledge that you have read," +
+  " understood, and agree to abide by the above terms and conditions.";

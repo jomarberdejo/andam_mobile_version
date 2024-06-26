@@ -16,11 +16,13 @@ import {
 
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { registerSchema } from "../../constants";
+import { registerSchema, termsAndConditionsText } from "../../constants";
 import * as ImagePicker from "expo-image-picker";
 import BouncyCheckbox from "react-native-bouncy-checkbox";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
+import axios from "axios";
+import { useLocation } from "../../context/LocationContext";
 
 const Register = () => {
   const router = useRouter();
@@ -29,6 +31,7 @@ const Register = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [userData, setUserData] = useState();
   const [processing, setProcessing] = useState(false);
+  const { getCurrentLocation } = useLocation();
   const {
     control,
     handleSubmit,
@@ -38,7 +41,7 @@ const Register = () => {
   });
 
   useEffect(() => {
-    // console.log(process.env.EXPO_PUBLIC_BACKEND_API_URL);
+    console.log(process.env.EXPO_PUBLIC_BACKEND_API_URL);
 
     async function getAuth() {
       const userDataJson = await AsyncStorage.getItem("userData");
@@ -134,18 +137,17 @@ const Register = () => {
           type: "image/jpeg",
         });
 
-        const response = await fetch(
-          process.env.EXPO_PUBLIC_BACKEND_API_URL + "/api/resident",
+        const response = await axios.post(
+          "https://andam.onrender.com/api/resident",
+          formData,
           {
-            method: "POST",
-            body: formData,
             headers: {
               "Content-Type": "multipart/form-data",
             },
           }
         );
 
-        const data = await response.json();
+        const data = await response.data;
 
         const newUserData = {
           ...userData,
@@ -169,11 +171,16 @@ const Register = () => {
             "Account Succesfully Registered!",
             ToastAndroid.LONG
           );
+          getCurrentLocation();
         } else {
           Alert.alert("Error", "Failed to register");
         }
       } catch (error) {
         console.error("Error registering:", error);
+        Alert.alert(
+          "Error",
+          "Failed to register, make sure you have internet connection available."
+        );
       } finally {
         setProcessing(false);
       }
@@ -256,37 +263,7 @@ const Register = () => {
             <Text style={styles.modalTitle}>Terms and Conditions</Text>
 
             <Text style={styles.modalText}>
-              1. Acceptance of Terms: By using our app ANDAM, you agree to abide
-              by the following terms and conditions.
-              {"\n\n"}
-              2. User Conduct: You agree not to engage in any unethical or
-              illegal activities, including but not limited to spamming, pranks,
-              or any other activities that may harm others.
-              {"\n\n"}
-              3. Data Privacy and Security: ANDAM is committed to ensuring the
-              safety and privacy of your data. We implement strict security
-              measures to protect your personal information and adhere to all
-              relevant data protection regulations.
-              {"\n\n"}
-              4. Intellectual Property: All content and materials provided by
-              ANDAM, including but not limited to text, images, logos, and
-              software, are protected by intellectual property laws. You agree
-              not to use, reproduce, or distribute any content from the app
-              without prior authorization.
-              {"\n\n"}
-              5. Disclaimer of Warranties: ANDAM provides the app on an "as is"
-              and "as available" basis, without any warranties or
-              representations of any kind. We do not guarantee the accuracy,
-              completeness, or reliability of any content or services provided
-              through the app.
-              {"\n\n"}
-              6. Limitation of Liability: In no event shall ANDAM be liable for
-              any indirect, incidental, special, or consequential damages
-              arising out of or in any way connected with your use of the app.
-              {"\n\n"}
-              By checking the box below, you acknowledge that you have read,
-              understood, and agree to abide by the above terms and conditions.
-              {"\n\n"}
+              {termsAndConditionsText}
               <View style={styles.checkboxContainer}>
                 <BouncyCheckbox
                   isChecked={termsAccepted}
